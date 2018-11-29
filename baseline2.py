@@ -48,16 +48,7 @@ def main():
 					predictions[ids] = 1
 				else:
 					predictions[ids] = 0
-
-
-				#print (question)
-				#print (new_question)
-				#print (is_impossible)
-				#print (total)
-				#break
-			print (predictions)
-			#break
-		#break
-
+	with open('output.json', 'w') as outfile:  
+    	json.dump(predictions, outfile)
 
 main()
