@@ -48,7 +48,7 @@ def main():
 					predictions[ids] = 1
 				else:
 					predictions[ids] = 0
-	with open('output.json', 'w') as outfile:  
+	with open('output2.json', 'w') as outfile:  
     	json.dump(predictions, outfile)
 
 main()

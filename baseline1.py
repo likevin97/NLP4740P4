@@ -21,7 +21,7 @@ def main():
 				ids = j[u'data'][data][u'paragraphs'][paragraph][u'qas'][q]["id"]
 				predictions[ids] = 1
 
-	with open('output.json', 'w') as outfile:  
-    	json.dump(predictions, outfile)
+	with open('output1.json', 'w') as outfile:  
+		json.dump(predictions, outfile)
 
 main()
