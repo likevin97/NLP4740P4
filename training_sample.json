@@ -1316,6 +1316,12 @@
                                 }
                             ],
                             "is_impossible": false
+                        },
+                        {
+                            "question": "When did Sonic the Hedgehog come out for SEGA Genesis?",
+                            "id": "56bfed855a85de1423453455",
+                            "answers": [],
+                            "is_impossible": true
                         }
                     ]
                 }
