@@ -174,7 +174,7 @@ def similarityBySentence(file_name):
 
 def main():
 
-    similarity("training_sample.json")
+    similarityBySentence("training_sample.json")
 
     #s = similarity(vector_context, vector_quesetion)
 
