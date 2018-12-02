@@ -7,6 +7,11 @@ Install libraries
 - NLTK
 - NLTK (punkt)
 - NLTK (averaged_perceptron_tagger)
+- NLTK (stem) 
+	- in python terminal type....
+	import nltk
+	nltk.download('wordnet')
+-scikit-learn
 
 ## Usage
 
