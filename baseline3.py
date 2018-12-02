@@ -42,12 +42,6 @@ def createCorpus(filename):
     return corpus
 
 
-def similarity(context_vector, question_vector):
-    #FIND THE SIMILARITY SOMEHOW
-    #returns the similarity
-    pass
-
-
 def main():
     corpus = createCorpus("training_sample.json")
 
