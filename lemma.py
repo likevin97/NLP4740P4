@@ -8,11 +8,16 @@ from nltk.stem import WordNetLemmatizer
 
 # Simplified question
 def getPOS(corpus):
-	text = nltk.word_tokenize(corpus)
-	words = nltk.pos_tag(text)
+	pos_tag = []
+	for sentence in corpus:
+		text = nltk.word_tokenize(sentence)
+		words = nltk.pos_tag(text)
+		for word in words:
+			pos_tag.append(word)
+
 	#less_words = [wt for (wt, tag) in words if tag not in ["CC","DT","EX","IN","LS","POS","TO",".","\\",",",":","(",")"]]
 	#return less_words
-	return words
+	return pos_tag
 
 def countWordsInParagraph(context):
 	wordList = nltk.word_tokenize(context)
@@ -47,7 +52,9 @@ def lemmatize(dictonary, corpus):
 	lemma = WordNetLemmatizer()
 	corp = []
 	for sentence in corpus:
+		#print (sentence)
 		s = nltk.word_tokenize(sentence)
+		#print (s)
 		sent = []
 		for word in s:
 			if dictonary[word] != None:
@@ -71,19 +78,11 @@ def main():
 
 	similarity = {}
 
-	pos = getPOS(" ".join(corpus))
+	#pos = getPOS(" ".join(corpus))
+	pos = getPOS(corpus)
+
 	pos_dict = {}
 	for (word, tag) in pos:
-		# if tag.startswith("J"):
-		# 	pos_dict[word] = wordnet.ADJ
-		# elif tag.startswith("V"):
-		# 	pos_dict[word] = wordnet.VERB
-		# elif tag.startswith("N"):
-		# 	pos_dict[word] = wordnet.NOUN
-		# elif tag.startswith("R"):
-		# 	pos_dict[word] = wordnet.ADV
-		# else:
-		# 	pos_dict[word] = ""
 
 		wtag = tag[0].lower()
 		wtag = wtag if wtag in ["a","r","n","v"] else None
