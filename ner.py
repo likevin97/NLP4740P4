@@ -10,16 +10,16 @@ import string
 
 # Simplified question
 def getPOS(corpus):
-	pos_tag = []
-	for sentence in corpus:
-		text = nltk.word_tokenize(sentence)
-		words = nltk.pos_tag(text)
-		for word in words:
-			pos_tag.append(word)
+    pos_tag = []
+    for sentence in corpus:
+        text = nltk.word_tokenize(sentence)
+        words = nltk.pos_tag(text)
+        for word in words:
+            pos_tag.append(word)
 
-	#less_words = [wt for (wt, tag) in words if tag not in ["CC","DT","EX","IN","LS","POS","TO",".","\\",",",":","(",")"]]
-	#return less_words
-	return pos_tag
+    #less_words = [wt for (wt, tag) in words if tag not in ["CC","DT","EX","IN","LS","POS","TO",".","\\",",",":","(",")"]]
+    #return less_words
+    return pos_tag
 
 def countWordsInParagraph(context):
     wordList = nltk.word_tokenize(context)
@@ -38,16 +38,16 @@ def createCorpus(stopwords, filename):
 
         for paragraph in range(paragraph_length):
             context = nltk.word_tokenize(j[u'data'][data][u'paragraphs'][paragraph][u'context'].lower())
-        
+
             corpus.append(" ".join([w for w in context if not w in stopwords]))
+            #corpus.append(context)
 
             question_length = len(j[u'data'][data][u'paragraphs'][paragraph][u'qas'])
 
             for q in range(question_length):
-                question = nltk.word_tokenize(j[u'data'][data][u'paragraphs'][paragraph][u'qas'][q]["question"].lower())
+                question = j[u'data'][data][u'paragraphs'][paragraph][u'qas'][q]["question"].lower()
 
-
-                corpus.append(" ".join([w for w in question if not w in stopwords]))
+                corpus.append(question)
     file.close()
     return corpus
 
@@ -71,7 +71,7 @@ def main():
     stop_words = set(stopwords.words('english'))
     stop_words.union(set(string.punctuation))
     corpus = createCorpus(stop_words, "training_sample.json")
-    print (corpus)
+    #print (corpus)
     #print ("=---=-------")
 
     file = open("training_sample.json")
@@ -96,6 +96,7 @@ def main():
     vectorsArrayForm = vectors.toarray()
 
     counter = 0
+    question_words = ["who", "what", "when", "where", "why"]
 
     data_length = len(j[u'data']) #442
     for data in range(data_length):
@@ -113,11 +114,33 @@ def main():
 
                 question_vector = vectorsArrayForm[counter]
 
-                similarity[question_id] = jaccard_similarity_score(context_vector, question_vector)
+                #similarity[question_id] = jaccard_similarity_score(context_vector, question_vector)
+
+                question = corpus[counter]
+
+                question_array = [question]
+
+                question_pos = getPOS(question_array)
+
+                print (question_pos)
+                q_word = ""
+                q_verb = []
+                for (w,t) in question_pos:
+                    if w in question_words:
+                        q_word = w
+                    if t.startswith("V"):
+                        q_verb.append(w)
+                
+                print ("Q-Word: " + q_word)
+                print ("Q-Verb: " + str(q_verb))
 
                 counter += 1
+            break
+        break
 
 
-    print(similarity)
+
+
+    # print(similarity)
 
 main()
