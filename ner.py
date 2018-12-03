@@ -106,6 +106,8 @@ def main():
 
             context_vector = vectorsArrayForm[counter]
 
+            context = corpus[counter]
+
             counter += 1
 
             question_length = len(j[u'data'][data][u'paragraphs'][paragraph][u'qas'])
@@ -122,25 +124,83 @@ def main():
 
                 question_pos = getPOS(question_array)
 
-                print (question_pos)
+                # print (question_pos)
                 q_word = ""
                 q_verb = []
+                q_noun = []
                 for (w,t) in question_pos:
                     if w in question_words:
                         q_word = w
                     if t.startswith("V"):
                         q_verb.append(w)
+                    if t.startswith("N"):
+                        q_noun.append(w)
                 
-                print ("Q-Word: " + q_word)
-                print ("Q-Verb: " + str(q_verb))
+                # print ("Q-Word: " + q_word)
+                # print ("Q-Verb: " + str(q_verb))
+                # print ("Q-Noun: " + str(q_noun))
+
+
+                context_sentences = context.split(".")
+
+                temp_prediction = 0
+
+                for sentence in context_sentences:
+                    words = nltk.word_tokenize(sentence)
+
+                    if (bool(set(words) & set(q_verb)) == False):
+                        temp_prediction = 0
+                        break
+                    if (q_word in ["who", "where", "when"]):
+                        elif (q_word == "who"):
+                            #do NER
+                            chunks = nltk.chunk.util.tree2conlltags(nltk.(nltk.pos_tag(words)))
+                            if (len(chunks) > 0):
+                                for chunk in chunks:
+                                    if hasattr(chunk, 'label'):
+                                        if (chunk.label() == "PER"):
+                                            temp_prediction = 1
+                                            break
+                                break
+                            else:
+                                temp_prediction = 1
+                        elif (q_word == "where"):
+                            #do NER
+                            chunks = nltk.chunk.util.tree2conlltags(nltk.ne_chunk(nltk.pos_tag(words)))
+                            if (len(chunks) > 0):
+                                for chunk in chunks:
+                                    if hasattr(chunk, 'label'):
+                                        if (chunk.label() == "LOC" or chunk.label() == "GPE"):
+                                            temp_prediction = 1
+                                            break
+                                break
+                            else:
+                                temp_prediction = 1
+                        elif (q_word == "when"):
+                            #do NER
+                            chunks = nltk.chunk.util.tree2conlltags(nltk.ne_chunk(nltk.pos_tag(words)))
+                            if (len(chunks) > 0):
+                                for chunk in chunks:
+                                    if hasattr(chunk, 'label'):
+                                        if (chunk.label() == "DATE"):
+                                            temp_prediction = 1
+                                            break
+                                break
+
+                    elif (q_word in ["what", "why", "how", "which"]):
+                        temp_prediction = 1
+                        break
+                
+                predictions[question_id] = temp_prediction
+
+
+
 
                 counter += 1
-            break
-        break
 
 
 
 
-    # print(similarity)
+    print(predictions)
 
 main()
