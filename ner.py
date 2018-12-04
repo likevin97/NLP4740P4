@@ -7,6 +7,7 @@ from sklearn.metrics import jaccard_similarity_score
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
 import string
+from tqdm import tqdm
 
 # Simplified question
 def getPOS(corpus):
@@ -33,19 +34,20 @@ def createCorpus(stopwords, filename):
     corpus = []
 
     data_length = len(j[u'data']) #442
-    for data in range(data_length):
+    for data in tqdm(range(data_length)):
         paragraph_length = len(j[u'data'][data][u'paragraphs']) #66
 
         for paragraph in range(paragraph_length):
-            context = nltk.word_tokenize(j[u'data'][data][u'paragraphs'][paragraph][u'context'].lower())
+            # context = nltk.word_tokenize(j[u'data'][data][u'paragraphs'][paragraph][u'context'])
+            context = j[u'data'][data][u'paragraphs'][paragraph][u'context']
 
-            corpus.append(" ".join([w for w in context if not w in stopwords]))
-            #corpus.append(context)
+            # corpus.append(" ".join([w for w in context if not w in stopwords]))
+            corpus.append(context)
 
             question_length = len(j[u'data'][data][u'paragraphs'][paragraph][u'qas'])
 
             for q in range(question_length):
-                question = j[u'data'][data][u'paragraphs'][paragraph][u'qas'][q]["question"].lower()
+                question = j[u'data'][data][u'paragraphs'][paragraph][u'qas'][q]["question"]
 
                 corpus.append(question)
     file.close()
@@ -69,42 +71,37 @@ def ourLemmatize(dictonary, corpus):
 
 def main():
     stop_words = set(stopwords.words('english'))
-    stop_words.union(set(string.punctuation))
-    corpus = createCorpus(stop_words, "training_sample.json")
+    # stop_words.union(set(string.punctuation))
+    corpus = createCorpus(stop_words, "development.json")
     #print (corpus)
     #print ("=---=-------")
 
-    file = open("training_sample.json")
+    file = open("development.json")
     j = json.load(file)
 
     predictions = {} #id:value
 
     similarity = {}
 
-    pos = getPOS(corpus)
-    pos_dict = {}
-    for (word, tag) in pos:
-        wtag = tag[0].lower()
-        wtag = wtag if wtag in ["a","r","n","v"] else None
-        pos_dict[word] = wtag
+    # pos = getPOS(corpus)
+    # pos_dict = {}
+    # for (word, tag) in pos:
+    #     wtag = tag[0].lower()
+    #     wtag = wtag if wtag in ["a","r","n","v"] else None
+    #     pos_dict[word] = wtag
 
 
-    corpus = ourLemmatize(pos_dict, corpus)
+    # corpus = ourLemmatize(pos_dict, corpus)
 
-    vectorizer = CountVectorizer()
-    vectors = vectorizer.fit_transform(corpus)
-    vectorsArrayForm = vectors.toarray()
 
     counter = 0
-    question_words = ["who", "what", "when", "where", "why"]
+    question_words = ["who", "what", "when", "where", "why", "how", "which", "whose", "whom", "is", "was", "are", "does", "did", "were", "can", "do", "has", "had", "name"]
 
     data_length = len(j[u'data']) #442
     for data in range(data_length):
 
         paragraph_length = len(j[u'data'][data][u'paragraphs']) #66
         for paragraph in range(paragraph_length):
-
-            context_vector = vectorsArrayForm[counter]
 
             context = corpus[counter]
 
@@ -113,10 +110,6 @@ def main():
             question_length = len(j[u'data'][data][u'paragraphs'][paragraph][u'qas'])
             for q in range(question_length):
                 question_id = j[u'data'][data][u'paragraphs'][paragraph][u'qas'][q]["id"]
-
-                question_vector = vectorsArrayForm[counter]
-
-                #similarity[question_id] = jaccard_similarity_score(context_vector, question_vector)
 
                 question = corpus[counter]
 
@@ -146,59 +139,64 @@ def main():
                 temp_prediction = 0
 
                 for sentence in context_sentences:
-                    words = nltk.word_tokenize(sentence)
+
+                    if (temp_prediction == 1):
+                        break
+
+                    words = nltk.word_tokenize(sentence.lower())
 
                     if (bool(set(words) & set(q_verb)) == False):
                         temp_prediction = 0
                         break
-                    if (q_word in ["who", "where", "when"]):
-                        elif (q_word == "who"):
+                    if (q_word in question_words):
+                        if (q_word == "who" or q_word == "Who"):
                             #do NER
-                            chunks = nltk.chunk.util.tree2conlltags(nltk.(nltk.pos_tag(words)))
+                            chunks = nltk.chunk.util.tree2conlltags(nltk.ne_chunk(nltk.pos_tag(words)))
                             if (len(chunks) > 0):
                                 for chunk in chunks:
-                                    if hasattr(chunk, 'label'):
-                                        if (chunk.label() == "PER"):
+                                    if (chunk[0] not in q_noun):
+                                        if (chunk[2] == "B-PERSON" or chunk[2] == "I-PERSON"):
                                             temp_prediction = 1
                                             break
                                 break
                             else:
                                 temp_prediction = 1
-                        elif (q_word == "where"):
+                        elif (q_word == "where" or q_word == "Where"):
                             #do NER
                             chunks = nltk.chunk.util.tree2conlltags(nltk.ne_chunk(nltk.pos_tag(words)))
                             if (len(chunks) > 0):
                                 for chunk in chunks:
-                                    if hasattr(chunk, 'label'):
-                                        if (chunk.label() == "LOC" or chunk.label() == "GPE"):
+                                    if (chunk[0] not in q_noun):
+                                        if (chunk[2] == "B-GPE" or chunk[2] == "I-GPE"):
                                             temp_prediction = 1
                                             break
                                 break
                             else:
                                 temp_prediction = 1
-                        elif (q_word == "when"):
+                        elif (q_word == "when" or q_word == "When"):
                             #do NER
                             chunks = nltk.chunk.util.tree2conlltags(nltk.ne_chunk(nltk.pos_tag(words)))
                             if (len(chunks) > 0):
                                 for chunk in chunks:
-                                    if hasattr(chunk, 'label'):
-                                        if (chunk.label() == "DATE"):
+                                    if (chunk[0] not in q_noun):
+                                        if (chunk[2] == "B-DATE" or chunk[2] == "I-DATE"):
                                             temp_prediction = 1
                                             break
                                 break
+                        else:
+                            #do POS
+                            for pos_tag in (nltk.pos_tag(words)):
+                                if (pos_tag[1][0] == "N"):
+                                    if (pos_tag[0] not in q_noun):
+                                        temp_prediction = 1
 
-                    elif (q_word in ["what", "why", "how", "which"]):
+                    elif (q_word in question_words):
                         temp_prediction = 1
                         break
                 
                 predictions[question_id] = temp_prediction
 
-
-
-
                 counter += 1
-
-
 
 
     print(predictions)

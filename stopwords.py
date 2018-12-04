@@ -70,8 +70,11 @@ def ourLemmatize(dictonary, corpus):
 def main():
     stop_words = set(stopwords.words('english'))
     stop_words.union(set(string.punctuation))
+    question = ["who", "what", "where", "when", "why", "how", "which"]
+    for w in question:
+        stop_words.remove(w)
     corpus = createCorpus(stop_words, "training_sample.json")
-    print (corpus)
+    #print (corpus)
     #print ("=---=-------")
 
     file = open("training_sample.json")
