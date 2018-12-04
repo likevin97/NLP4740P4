@@ -134,69 +134,69 @@ def main():
                 # print ("Q-Noun: " + str(q_noun))
 
 
-                context_sentences = context.split(".")
+                # context_sentences = context.split(".")
 
-                temp_prediction = 0
+                # temp_prediction = 0
 
-                for sentence in context_sentences:
+                # for sentence in context_sentences:
 
-                    if (temp_prediction == 1):
-                        break
+                #     if (temp_prediction == 1):
+                #         break
 
-                    words = nltk.word_tokenize(sentence.lower())
+                #     words = nltk.word_tokenize(sentence.lower())
 
-                    if (bool(set(words) & set(q_verb)) == False):
-                        temp_prediction = 0
-                        break
-                    if (q_word in question_words):
-                        if (q_word == "who" or q_word == "Who"):
-                            #do NER
-                            chunks = nltk.chunk.util.tree2conlltags(nltk.ne_chunk(nltk.pos_tag(words)))
-                            if (len(chunks) > 0):
-                                for chunk in chunks:
-                                    if (chunk[0] not in q_noun):
-                                        if (chunk[2] == "B-PERSON" or chunk[2] == "I-PERSON"):
-                                            temp_prediction = 1
-                                            break
-                                break
-                            else:
-                                temp_prediction = 1
-                        elif (q_word == "where" or q_word == "Where"):
-                            #do NER
-                            chunks = nltk.chunk.util.tree2conlltags(nltk.ne_chunk(nltk.pos_tag(words)))
-                            if (len(chunks) > 0):
-                                for chunk in chunks:
-                                    if (chunk[0] not in q_noun):
-                                        if (chunk[2] == "B-GPE" or chunk[2] == "I-GPE"):
-                                            temp_prediction = 1
-                                            break
-                                break
-                            else:
-                                temp_prediction = 1
-                        elif (q_word == "when" or q_word == "When"):
-                            #do NER
-                            chunks = nltk.chunk.util.tree2conlltags(nltk.ne_chunk(nltk.pos_tag(words)))
-                            if (len(chunks) > 0):
-                                for chunk in chunks:
-                                    if (chunk[0] not in q_noun):
-                                        if (chunk[2] == "B-DATE" or chunk[2] == "I-DATE"):
-                                            temp_prediction = 1
-                                            break
-                                break
-                        else:
-                            #do POS
-                            for pos_tag in (nltk.pos_tag(words)):
-                                if (pos_tag[1][0] == "N"):
-                                    if (pos_tag[0] not in q_noun):
-                                        temp_prediction = 1
+                #     if (bool(set(words) & set(q_verb)) == False):
+                #         temp_prediction = 0
+                #         break
+                #     if (q_word in question_words):
+                #         if (q_word == "who" or q_word == "Who"):
+                #             #do NER
+                #             chunks = nltk.chunk.util.tree2conlltags(nltk.ne_chunk(nltk.pos_tag(words)))
+                #             if (len(chunks) > 0):
+                #                 for chunk in chunks:
+                #                     if (chunk[0] not in q_noun):
+                #                         if (chunk[2] == "B-PERSON" or chunk[2] == "I-PERSON"):
+                #                             temp_prediction = 1
+                #                             break
+                #                 break
+                #             else:
+                #                 temp_prediction = 1
+                #         elif (q_word == "where" or q_word == "Where"):
+                #             #do NER
+                #             chunks = nltk.chunk.util.tree2conlltags(nltk.ne_chunk(nltk.pos_tag(words)))
+                #             if (len(chunks) > 0):
+                #                 for chunk in chunks:
+                #                     if (chunk[0] not in q_noun):
+                #                         if (chunk[2] == "B-GPE" or chunk[2] == "I-GPE"):
+                #                             temp_prediction = 1
+                #                             break
+                #                 break
+                #             else:
+                #                 temp_prediction = 1
+                #         elif (q_word == "when" or q_word == "When"):
+                #             #do NER
+                #             chunks = nltk.chunk.util.tree2conlltags(nltk.ne_chunk(nltk.pos_tag(words)))
+                #             if (len(chunks) > 0):
+                #                 for chunk in chunks:
+                #                     if (chunk[0] not in q_noun):
+                #                         if (chunk[2] == "B-DATE" or chunk[2] == "I-DATE"):
+                #                             temp_prediction = 1
+                #                             break
+                #                 break
+                #         else:
+                #             #do POS
+                #             for pos_tag in (nltk.pos_tag(words)):
+                #                 if (pos_tag[1][0] == "N"):
+                #                     if (pos_tag[0] not in q_noun):
+                #                         temp_prediction = 1
 
-                    elif (q_word in question_words):
-                        temp_prediction = 1
-                        break
+                #     elif (q_word in question_words):
+                #         temp_prediction = 1
+                #         break
                 
-                predictions[question_id] = temp_prediction
+                # predictions[question_id] = temp_prediction
 
-                counter += 1
+                # counter += 1
 
 
     print(predictions)

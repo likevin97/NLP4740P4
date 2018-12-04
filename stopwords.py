@@ -70,7 +70,7 @@ def ourLemmatize(dictonary, corpus):
 def main():
     stop_words = set(stopwords.words('english'))
     stop_words.union(set(string.punctuation))
-    question = ["who", "what", "where", "when", "why", "how", "which"]
+    question = ["who", "what", "when", "where", "why", "how", "which", "whose", "whom", "is", "was", "are", "does", "did", "were", "can", "do", "has", "had", "name"]
     for w in question:
         stop_words.remove(w)
     corpus = createCorpus(stop_words, "training_sample.json")
