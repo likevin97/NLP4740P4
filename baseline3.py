@@ -3,6 +3,7 @@ import nltk
 from collections import Counter
 import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.metrics import jaccard_similarity_score
 from scipy import spatial
 
 # Simplified question
@@ -107,7 +108,7 @@ def similarity(file_name):
 
                 counter += 1
     
-    print(similarity)
+    return similarity
 
 
 def similarityBySentence(file_name):
@@ -170,27 +171,23 @@ def similarityBySentence(file_name):
             counter = sentence_start + question_offset + num_sentences
             
     
-    print(similarity)
+    return similarity
 
 def main():
 
-    similarity("training_sample.json")
+    sim_dic = similarity("training_sample.json")
 
     #s = similarity(vector_context, vector_quesetion)
 
+    predictions = {}
 
-    # #deletes useless information from question
-    # new_question = getSimpleQuestion(question)
-    # total = 0
-    # for word in new_question:
-    # 	if word in dic:
-    # 		total+= dic[word]
+    for key, value in sim_dic.items():
+        if value > 0.5:
+            predictions[key] = 1
+        else:
+            predictions[key] = 0
 
-    # if total >= 1:
-    # 	predictions[ids] = 1
-    # else:
-    # 	predictions[ids] = 0
-    # with open('output3.json', 'w') as outfile:  
-    #     json.dump(predictions, outfile)
+    with open('output3.json', 'w') as outfile:  
+        json.dump(predictions, outfile)
 
 main()
