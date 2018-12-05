@@ -4,15 +4,15 @@ from collections import Counter
 
 # Simplified question
 def getSimpleQuestion(question):
-    text = nltk.word_tokenize(question)
-    words = nltk.pos_tag(text)
-    less_words = [wt for (wt, tag) in words if tag not in ["CC","DT","EX","IN","LS","POS","TO",".","\\",",",":","(",")"]]
-    return less_words
+	text = nltk.word_tokenize(question)
+	words = nltk.pos_tag(text)
+	less_words = [wt for (wt, tag) in words if tag not in ["CC","DT","EX","IN","LS","POS","TO",".","\\",",",":","(",")"]]
+	return less_words
 
 def countWordsInParagraph(context):
-    wordList = nltk.word_tokenize(context)
-    counts = Counter(wordList)
-    return counts
+	wordList = nltk.word_tokenize(context)
+	counts = Counter(wordList)
+	return counts
 
 def main():
 	file = open("training.json")
@@ -44,11 +44,11 @@ def main():
 					if word in dic:
 						total+= dic[word]
 
-				if total >= 1:
+				if total >= 9:
 					predictions[ids] = 1
 				else:
 					predictions[ids] = 0
 	with open('output2.json', 'w') as outfile:  
-    	json.dump(predictions, outfile)
+		json.dump(predictions, outfile)
 
 main()
