@@ -15,7 +15,7 @@ def countWordsInParagraph(context):
     return counts
 
 def main():
-	file = open("training.json")
+	file = open("development.json")
 	j = json.load(file)
 
 	predictions = {} #id:value

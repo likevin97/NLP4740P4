@@ -48,22 +48,40 @@ def evaluate(preds, test_set):
         elif pred == 1 and preds[id] == 0:
             false_negatives += 1
 
+    print("Intermediate evaluation:")
+    print("true_positives: " + str(true_positives))
+    print("true_negatives: " + str(true_negatives))
+    print("false_positives: " + str(false_positives))
+    print("false_negatives: " + str(false_negatives))
+    print("\n" * 3)
+
     precision = calculate_precision(true_positives, false_positives)
     recall = calculate_recall(true_positives, false_negatives)
     f_1 = calculate_f1(precision, recall)
-    return precision, recall, f_1
+    accuracy = calculate_accuracy(true_positives, true_negatives, false_positives, false_negatives)
+    return precision, recall, f_1, accuracy
 
 
 def calculate_precision(true_positives, false_positives):
+    if true_positives + false_positives == 0:
+        return 0
     return true_positives / (true_positives + false_positives)
 
 
 def calculate_recall(true_positives, false_negatives):
+    if true_positives + false_negatives == 0:
+        return 0
     return true_positives / (true_positives + false_negatives)
 
 
 def calculate_f1(precision, recall):
+    if precision + recall == 0:
+        return 0
     return (2 * precision * recall) / (precision + recall)
+
+
+def calculate_accuracy(true_positive, true_negative, false_positive, false_negative):
+    return (true_positive + true_negative) / (true_positive + true_negative + false_positive + false_negative)
 
 
 if __name__ == "__main__":
@@ -99,7 +117,9 @@ if __name__ == "__main__":
     os.chdir(current_loc)
 
     # determine performance
-    p, r, f = evaluate(preds, test_set)
+    p, r, f, a = evaluate(preds, test_set)
+    print("Results:")
     print("precision score: " + str(p))
     print("recall score: " + str(r))
     print("f_1 measure: " + str(f))
+    print("accuracy: " + str(a))
