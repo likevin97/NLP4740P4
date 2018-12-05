@@ -68,6 +68,78 @@ def ourLemmatize(dictonary, corpus):
         corp.append(" ".join(sent))
     return corp
 
+def getQuestionWord(question, question_words):
+    question_array = [question]
+    question_pos = getPOS(question_array)
+    q_word = ""
+
+    for (w,t) in question_pos:
+        if w.lower() in question_words:
+            q_word = w
+            break
+    
+    return q_word
+
+def getQuestionVerbs(question, question_words):
+    question_array = [question]
+    question_pos = getPOS(question_array)
+    q_verbs = []
+
+    for (w,t) in question_pos:
+        if t.startswith("V") and w.lower() not in question_words:
+            q_verbs.append(w)
+    
+    return q_verbs
+
+def getQuestionNouns(question, question_words):
+    question_array = [question]
+    question_pos = getPOS(question_array)
+    q_nouns = []
+    
+    for (w,t) in question_pos:
+        if t.startswith("N") and w.lower() not in question_words:
+            q_nouns.append(w)
+    
+    return q_nouns
+
+def getNERCount(question_words, question, context, qwordTagMap):
+    '''
+    for the question word, does the corresponding NER tag exist in the context.
+    For every NER tag exists, see if that word is in the question
+    if yes dont count, else count
+    '''
+
+    q_word = getQuestionWord(question, question_words)
+
+    qwordTags = qwordTagMap[q_word.lower()]
+
+    num_of_tags_in_context = 0
+
+
+    question_words = nltk.word_tokenize(question)
+
+    question_chunks = nltk.chunk.util.tree2conlltags(nltk.ne_chunk(nltk.pos_tag(question_words)))
+
+    questionNERWords = []
+
+    if (len(question_chunks) > 0):
+        for question_chunk in question_chunks:
+            questionNERWords.append(question_chunk[0])
+
+
+    context_words = nltk.word_tokenize(context)
+
+    context_chunks = nltk.chunk.util.tree2conlltags(nltk.ne_chunk(nltk.pos_tag(context_words)))
+
+    if (len(context_chunks) > 0):
+        for context_chunk in context_chunks:
+            if (context_chunk[2] in qwordTags and context_chunk[0] not in questionNERWords):
+                num_of_tags_in_context += 1
+
+    return num_of_tags_in_context
+
+
+
 
 def main():
     stop_words = set(stopwords.words('english'))
@@ -96,6 +168,18 @@ def main():
 
     counter = 0
     question_words = ["who", "what", "when", "where", "why", "how", "which", "whose", "whom", "is", "was", "are", "does", "did", "were", "can", "do", "has", "had", "name"]
+    whoTags = ["B-PERSON", "I-PERSON"]
+    whatTags = ["B-GPE", "I-GPE", "B-LOCATION", "I_LOCATION"]
+    whenTags = ["B-DATE", "I-DATE", "B-TIME", "I-TIME"]
+    otherTags = ["B-PERSON", "I-PERSON", "B-GPE", "I-GPE", "B-LOCATION", "I-LOCATION", "B-DATE", "I-DATE", "B-TIME", "I-TIME"]
+
+    qwordTagMap = {}
+
+    for question_word in question_words:
+        qwordTagMap[question_word] = otherTags
+    qwordTagMap["who"] = whoTags
+    qwordTagMap["what"] = whatTags
+    qwordTagMap["when"] = whenTags
 
     data_length = len(j[u'data']) #442
     for data in range(data_length):
@@ -112,26 +196,11 @@ def main():
                 question_id = j[u'data'][data][u'paragraphs'][paragraph][u'qas'][q]["id"]
 
                 question = corpus[counter]
+            
 
-                question_array = [question]
+                nerCounts = getNERCount(question_words, question, context, qwordTagMap)
 
-                question_pos = getPOS(question_array)
-
-                # print (question_pos)
-                q_word = ""
-                q_verb = []
-                q_noun = []
-                for (w,t) in question_pos:
-                    if w in question_words:
-                        q_word = w
-                    if t.startswith("V"):
-                        q_verb.append(w)
-                    if t.startswith("N"):
-                        q_noun.append(w)
-                
-                # print ("Q-Word: " + q_word)
-                # print ("Q-Verb: " + str(q_verb))
-                # print ("Q-Noun: " + str(q_noun))
+                counter += 1
 
 
                 # context_sentences = context.split(".")
@@ -199,6 +268,6 @@ def main():
                 # counter += 1
 
 
-    print(predictions)
+    # print(predictions)
 
 main()
