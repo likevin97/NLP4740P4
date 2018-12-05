@@ -89,12 +89,12 @@ if __name__ == "__main__":
     # collect args
 
     try:
-        path_to_data = sys.argv[1]
+        path_to_data = os.path.join(os.getcwd(), sys.argv[1])
     except:
         path_to_data = os.path.join(os.getcwd(), "development.json")
 
     try:
-        path_to_predictions = sys.argv[2]
+        path_to_predictions = os.path.join(os.getcwd(), sys.argv[2])
     except:
         path_to_predictions = os.path.join(os.getcwd(), "sample.json")
 
