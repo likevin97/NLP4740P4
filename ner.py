@@ -71,7 +71,7 @@ def ourLemmatize(dictonary, corpus):
 def getQuestionWord(question, question_words):
     question_array = [question]
     question_pos = getPOS(question_array)
-    q_word = ""
+    q_word = "<UNK>"
 
     for (w,t) in question_pos:
         if w.lower() in question_words:
@@ -80,27 +80,63 @@ def getQuestionWord(question, question_words):
     
     return q_word
 
-def getQuestionVerbs(question, question_words):
+def getQuestionVerbs(question):
     question_array = [question]
     question_pos = getPOS(question_array)
     q_verbs = []
 
     for (w,t) in question_pos:
-        if t.startswith("V") and w.lower() not in question_words:
+        if t.startswith("V"):
             q_verbs.append(w)
     
     return q_verbs
 
-def getQuestionNouns(question, question_words):
+def getQuestionNouns(question):
     question_array = [question]
     question_pos = getPOS(question_array)
     q_nouns = []
     
     for (w,t) in question_pos:
-        if t.startswith("N") and w.lower() not in question_words:
+        if t.startswith("N"):
             q_nouns.append(w)
     
     return q_nouns
+
+def getVerbCount(question, context):
+
+    q_verbs = getQuestionVerbs(question.lower())
+
+    pos_dict = {}
+
+    pos = getPOS([context.lower(), question.lower()])
+
+    for (word, tag) in pos:
+        wtag = tag[0].lower()
+        wtag = wtag if wtag in ["a","r","n","v"] else None
+        pos_dict[word] = wtag
+    
+    lemmatized = ourLemmatize(pos_dict, [context.lower(), question.lower()])
+
+    return len(set(nltk.word_tokenize(lemmatized[0])) & set(q_verbs))
+
+def getNounCount(question, context):
+    q_nouns = getQuestionNouns(question.lower())
+
+    pos_dict = {}
+
+    pos = getPOS([context.lower(), question.lower()])
+
+    for (word, tag) in pos:
+        wtag = tag[0].lower()
+        wtag = wtag if wtag in ["a","r","n","v"] else None
+        pos_dict[word] = wtag
+    
+    lemmatized = ourLemmatize(pos_dict, [context.lower(), question.lower()])
+
+    return len(set(nltk.word_tokenize(lemmatized[0])) & set(q_nouns))
+
+
+
 
 def getNERCount(question_words, question, context, qwordTagMap):
     '''
@@ -110,6 +146,9 @@ def getNERCount(question_words, question, context, qwordTagMap):
     '''
 
     q_word = getQuestionWord(question, question_words)
+
+    print(q_word)
+    print(question)
 
     qwordTags = qwordTagMap[q_word.lower()]
 
@@ -144,11 +183,11 @@ def getNERCount(question_words, question, context, qwordTagMap):
 def main():
     stop_words = set(stopwords.words('english'))
     # stop_words.union(set(string.punctuation))
-    corpus = createCorpus(stop_words, "development.json")
+    corpus = createCorpus(stop_words, "training_sample.json")
     #print (corpus)
     #print ("=---=-------")
 
-    file = open("development.json")
+    file = open("training_sample.json")
     j = json.load(file)
 
     predictions = {} #id:value
@@ -180,6 +219,7 @@ def main():
     qwordTagMap["who"] = whoTags
     qwordTagMap["what"] = whatTags
     qwordTagMap["when"] = whenTags
+    qwordTagMap["<unk>"] = otherTags
 
     data_length = len(j[u'data']) #442
     for data in range(data_length):
@@ -198,7 +238,14 @@ def main():
                 question = corpus[counter]
             
 
-                nerCounts = getNERCount(question_words, question, context, qwordTagMap)
+                # nerCounts = getNERCount(question_words, question, context, qwordTagMap)
+
+                verbCount = getVerbCount(question, context)
+                nounCount = getNounCount(question, context)
+
+                # print(nerCounts)
+                print(verbCount)
+                print(nounCount)
 
                 counter += 1
 

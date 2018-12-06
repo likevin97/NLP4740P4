@@ -20,31 +20,31 @@ def countWordsInParagraph(context):
 	return counts
 
 def main():
+<<<<<<< HEAD
 	stop_words = set(stopwords.words('english'))
 	stop_words.union(set(string.punctuation))
 
 	file = open("training.json")
 	j = json.load(file)
 
-	predictions = {} #id:value
+    predictions = {} #id:value
 
-	data_length = len(j[u'data']) #442
-	for data in range(data_length):
-		paragraph_length = len(j[u'data'][data][u'paragraphs']) #66
+    data_length = len(j[u'data']) #442
+    for data in range(data_length):
+        paragraph_length = len(j[u'data'][data][u'paragraphs']) #66
 
-		for paragraph in range(paragraph_length):
-			context = j[u'data'][data][u'paragraphs'][paragraph][u'context']
-			question_length = len(j[u'data'][data][u'paragraphs'][paragraph][u'qas'])
+        for paragraph in range(paragraph_length):
+            context = j[u'data'][data][u'paragraphs'][paragraph][u'context']
+            question_length = len(j[u'data'][data][u'paragraphs'][paragraph][u'qas'])
 
-			dic = countWordsInParagraph(context)
+            dic = countWordsInParagraph(context)
 
-			for q in range(question_length):
-				question = j[u'data'][data][u'paragraphs'][paragraph][u'qas'][q]["question"]
-				ids = j[u'data'][data][u'paragraphs'][paragraph][u'qas'][q]["id"]
+            for q in range(question_length):
+                question = j[u'data'][data][u'paragraphs'][paragraph][u'qas'][q]["question"]
+                ids = j[u'data'][data][u'paragraphs'][paragraph][u'qas'][q]["id"]
 
-				#only training has is_impossible
-				#is_impossible = j[u'data'][data][u'paragraphs'][paragraph][u'qas'][q]["is_impossible"]
-
+                #only training has is_impossible
+                #is_impossible = j[u'data'][data][u'paragraphs'][paragraph][u'qas'][q]["is_impossible"]
 				#deletes useless information from question
 				new_question = getSimpleQuestion(question, stop_words)
 				total = 0
