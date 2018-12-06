@@ -176,19 +176,30 @@ def similarityBySentence(file_name):
 def main():
 
     sim_dic = similarity("training.json")
-    #print(sim_dic)
 
-    #s = similarity(vector_context, vector_quesetion)
 
-    predictions = {}
+    min_sim = 1.0
+    max_sim = 0.0
 
     for key, value in sim_dic.items():
-        if value > 0.995:
-            predictions[key] = 1
-        else:
-            predictions[key] = 0
+        if (value < min_sim):
+            min_sim = value
+        if (value > max_sim):
+            max_sim = value
+    
 
-    with open('output3.json', 'w') as outfile:  
-        json.dump(predictions, outfile)
+    print ("Minimum Jaccard Similarity: " + str(min_sim))
+    print ("Maximum Jaccard Similarity: " + str(max_sim))
+
+    # predictions = {}
+
+    # for key, value in sim_dic.items():
+    #     if value > 0.995:
+    #         predictions[key] = 1
+    #     else:
+    #         predictions[key] = 0
+
+    # with open('output3.json', 'w') as outfile:  
+    #     json.dump(predictions, outfile)
 
 main()

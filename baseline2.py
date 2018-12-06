@@ -24,7 +24,7 @@ def main():
     stop_words = set(stopwords.words('english'))
     stop_words.union(set(string.punctuation))
 
-    file = open("training.json")
+    file = open("development.json")
     j = json.load(file)
     
     predictions = {} #id:value
@@ -46,7 +46,7 @@ def main():
                 #only training has is_impossible
                 #is_impossible = j[u'data'][data][u'paragraphs'][paragraph][u'qas'][q]["is_impossible"]
                 #deletes useless information from question
-                new_question = getSimpleQuestion(question)
+                new_question = getSimpleQuestion(question, stop_words)
                 total = 0
                 for word in new_question:
                     if word in dic:
