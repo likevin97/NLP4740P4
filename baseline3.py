@@ -175,14 +175,15 @@ def similarityBySentence(file_name):
 
 def main():
 
-    sim_dic = similarity("training_sample.json")
+    sim_dic = similarity("training.json")
+    #print(sim_dic)
 
     #s = similarity(vector_context, vector_quesetion)
 
     predictions = {}
 
     for key, value in sim_dic.items():
-        if value > 0.5:
+        if value > 0.995:
             predictions[key] = 1
         else:
             predictions[key] = 0
